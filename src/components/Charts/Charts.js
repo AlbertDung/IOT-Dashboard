@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Grid, Paper, Typography, ButtonGroup, Button } from '@mui/material';
 import ChartCard from './ChartCard';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import {
@@ -13,57 +13,210 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+const timeRanges = ['Day', 'Week', 'Month', 'Year'];
 
 const lightData = {
-  labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+  labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
   datasets: [{
-    label: 'Ánh sáng',
+    label: 'Light Intensity',
     data: [900, 1200, 1100, 1500, 1300, 1700],
     borderColor: '#1976d2',
-    backgroundColor: 'rgba(25, 118, 210, 0.2)',
+    backgroundColor: 'rgba(25, 118, 210, 0.1)',
     tension: 0.4,
+    fill: true,
   }],
 };
+
 const tempData = {
-  labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+  labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
   datasets: [{
-    label: 'Nhiệt độ',
+    label: 'Temperature',
     data: [25, 28, 30, 27, 29, 31],
-    backgroundColor: '#e53935',
+    backgroundColor: 'rgba(229, 57, 53, 0.8)',
+    borderRadius: 4,
   }],
 };
+
 const humidityData = {
-  labels: ['Aaaa', 'Aaaaa', 'Aaaaaa', 'Aaaaaaa'],
+  labels: ['Optimal', 'High', 'Low', 'Critical'],
   datasets: [{
-    label: 'Độ ẩm',
-    data: [25, 35, 25, 15],
-    backgroundColor: ['#1976d2', '#e53935', '#fbc02d', '#43a047'],
+    label: 'Humidity Distribution',
+    data: [45, 25, 20, 10],
+    backgroundColor: [
+      'rgba(25, 118, 210, 0.8)',
+      'rgba(229, 57, 53, 0.8)',
+      'rgba(251, 192, 45, 0.8)',
+      'rgba(67, 160, 71, 0.8)',
+    ],
+    borderWidth: 0,
   }],
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      padding: 12,
+      titleFont: {
+        size: 14,
+        weight: 'bold',
+      },
+      bodyFont: {
+        size: 13,
+      },
+      cornerRadius: 8,
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+      },
+    },
+    x: {
+      grid: {
+        display: false,
+      },
+    },
+  },
 };
 
 function Charts() {
+  const [timeRange, setTimeRange] = useState('Day');
+
   return (
     <Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={7}>
-          <ChartCard title="Cảm biến ánh sáng">
-            <Line data={lightData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
-          </ChartCard>
+      <Paper 
+        sx={{ 
+          p: 3, 
+          mb: 3, 
+          borderRadius: '12px',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)'
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            Analytics Dashboard
+          </Typography>
+          <ButtonGroup size="small">
+            {timeRanges.map((range) => (
+              <Button
+                key={range}
+                variant={timeRange === range ? 'contained' : 'outlined'}
+                onClick={() => setTimeRange(range)}
+                sx={{
+                  minWidth: 80,
+                  borderRadius: '8px !important',
+                  '&:not(:last-child)': {
+                    borderRight: 'none',
+                  },
+                }}
+              >
+                {range}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Box>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={7}>
+            <ChartCard title="Light Intensity">
+              <Box sx={{ height: 300 }}>
+                <Line 
+                  data={lightData} 
+                  options={{
+                    ...chartOptions,
+                    plugins: {
+                      ...chartOptions.plugins,
+                      tooltip: {
+                        ...chartOptions.plugins.tooltip,
+                        callbacks: {
+                          label: (context) => `Light: ${context.raw} lux`,
+                        },
+                      },
+                    },
+                  }} 
+                />
+              </Box>
+            </ChartCard>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <ChartCard title="Temperature">
+              <Box sx={{ height: 300 }}>
+                <Bar 
+                  data={tempData} 
+                  options={{
+                    ...chartOptions,
+                    plugins: {
+                      ...chartOptions.plugins,
+                      tooltip: {
+                        ...chartOptions.plugins.tooltip,
+                        callbacks: {
+                          label: (context) => `Temperature: ${context.raw}°C`,
+                        },
+                      },
+                    },
+                  }} 
+                />
+              </Box>
+            </ChartCard>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <ChartCard title="Humidity Distribution">
+              <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ width: '80%', maxWidth: 300 }}>
+                  <Pie 
+                    data={humidityData} 
+                    options={{
+                      ...chartOptions,
+                      plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                          display: true,
+                          position: 'bottom',
+                          labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                          },
+                        },
+                        tooltip: {
+                          ...chartOptions.plugins.tooltip,
+                          callbacks: {
+                            label: (context) => `Humidity: ${context.raw}%`,
+                          },
+                        },
+                      },
+                    }} 
+                  />
+                </Box>
+              </Box>
+            </ChartCard>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={5}>
-          <ChartCard title="Cảm biến nhiệt độ">
-            <Bar data={tempData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
-          </ChartCard>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <ChartCard title="Cảm biến độ ẩm">
-            <Pie data={humidityData} options={{ responsive: true }} />
-          </ChartCard>
-        </Grid>
-      </Grid>
+      </Paper>
     </Box>
   );
 }
