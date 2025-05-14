@@ -19,7 +19,7 @@ function App() {
     <Router>
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
         <CssBaseline />
-        {/* Sidebar */}
+        {/* Sidebar first*/}
         <Drawer
           variant="permanent"
           sx={{
