@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, Paper, Grid, Button, Stack, Divider } from '@mui/material';
 import SensorWidget from './SensorWidget';
 import ControlToggle from './ControlToggle';
-import sensors from '../../mock/sensors';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SettingsIcon from '@mui/icons-material/Settings';
+import useSensorData from '../../hooks/useSensorData';
 
 function Main() {
-  const [led1, setLed1] = useState(false);
-  const [led2, setLed2] = useState(false);
-  const [autoMode, setAutoMode] = useState(false);
+  const [led1, setLed1] = React.useState(false);
+  const [led2, setLed2] = React.useState(false);
+  const [autoMode, setAutoMode] = React.useState(false);
+  const { latest, max, error } = useSensorData();
 
   return (
     <Box>
@@ -111,32 +112,39 @@ function Main() {
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
               Sensor Readings
             </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <SensorWidget 
-                  name="Temperature" 
-                  value={sensors.temperature} 
-                  unit="°C" 
-                  color="#e53935" 
-                />
+            {error ? (
+              <Typography color="error">{error}</Typography>
+            ) : (
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <SensorWidget 
+                    name="Temperature" 
+                    value={latest?.temperature} 
+                    unit="°C" 
+                    color="#e53935" 
+                    max={max?.temperature}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <SensorWidget 
+                    name="Humidity" 
+                    value={latest?.humidity} 
+                    unit="%" 
+                    color="#1e88e5" 
+                    max={max?.humidity}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <SensorWidget 
+                    name="Light" 
+                    value={latest?.light} 
+                    unit="lux" 
+                    color="#fbc02d" 
+                    max={max?.light}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <SensorWidget 
-                  name="Humidity" 
-                  value={sensors.humidity} 
-                  unit="%" 
-                  color="#1e88e5" 
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <SensorWidget 
-                  name="Light" 
-                  value={sensors.light} 
-                  unit="lux" 
-                  color="#fbc02d" 
-                />
-              </Grid>
-            </Grid>
+            )}
           </Paper>
         </Grid>
 
