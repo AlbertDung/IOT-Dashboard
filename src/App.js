@@ -13,6 +13,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Main from './components/Main/Main';
 import Charts from './components/Charts/Charts';
 import Logs from './components/Logs/Logs';
+import SensorData from './components/SensorData';
 
 const drawerWidth = 260;
 
@@ -170,6 +171,7 @@ function App() {
             <Route path="/charts" element={<Charts />} />
             <Route path="/logs" element={<Logs />} />
           </Routes>
+          <SensorData />
         </Box>
       </Box>
     </Router>
