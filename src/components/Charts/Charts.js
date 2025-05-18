@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Box, Grid, Paper, Typography, ButtonGroup, Button } from '@mui/material';
 import ChartCard from './ChartCard';
 import { Line, Bar, Pie } from 'react-chartjs-2';
+import useSensorData from '../../hooks/useSensorData';
+
+// Register Chart.js components
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,80 +34,68 @@ ChartJS.register(
 
 const timeRanges = ['Day', 'Week', 'Month', 'Year'];
 
-const lightData = {
-  labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-  datasets: [{
-    label: 'Light Intensity',
-    data: [900, 1200, 1100, 1500, 1300, 1700],
-    borderColor: '#1976d2',
-    backgroundColor: 'rgba(25, 118, 210, 0.1)',
-    tension: 0.4,
-    fill: true,
-  }],
-};
-
-const tempData = {
-  labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-  datasets: [{
-    label: 'Temperature',
-    data: [25, 28, 30, 27, 29, 31],
-    backgroundColor: 'rgba(229, 57, 53, 0.8)',
-    borderRadius: 4,
-  }],
-};
-
-const humidityData = {
-  labels: ['Optimal', 'High', 'Low', 'Critical'],
-  datasets: [{
-    label: 'Humidity Distribution',
-    data: [45, 25, 20, 10],
-    backgroundColor: [
-      'rgba(25, 118, 210, 0.8)',
-      'rgba(229, 57, 53, 0.8)',
-      'rgba(251, 192, 45, 0.8)',
-      'rgba(67, 160, 71, 0.8)',
-    ],
-    borderWidth: 0,
-  }],
-};
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      padding: 12,
-      titleFont: {
-        size: 14,
-        weight: 'bold',
-      },
-      bodyFont: {
-        size: 13,
-      },
-      cornerRadius: 8,
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)',
-      },
-    },
-    x: {
-      grid: {
-        display: false,
-      },
-    },
-  },
-};
-
 function Charts() {
   const [timeRange, setTimeRange] = useState('Day');
+  const { history, error } = useSensorData();
+
+  // Prepare chart data from history
+  const labels = history.map(d => d.time ? new Date(d.time).toLocaleTimeString() : '');
+  const lightData = {
+    labels,
+    datasets: [{
+      label: 'Light Intensity',
+      data: history.map(d => d.light),
+      borderColor: '#1976d2',
+      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+      tension: 0.4,
+      fill: true,
+    }],
+  };
+  const tempData = {
+    labels,
+    datasets: [{
+      label: 'Temperature',
+      data: history.map(d => d.temperature),
+      backgroundColor: 'rgba(229, 57, 53, 0.8)',
+      borderRadius: 4,
+    }],
+  };
+  const humidityData = {
+    labels,
+    datasets: [{
+      label: 'Humidity',
+      data: history.map(d => d.humidity),
+      backgroundColor: [
+        'rgba(25, 118, 210, 0.8)',
+        'rgba(229, 57, 53, 0.8)',
+        'rgba(251, 192, 45, 0.8)',
+        'rgba(67, 160, 71, 0.8)',
+      ],
+      borderWidth: 0,
+    }],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+      },
+      x: { grid: { display: false } },
+    },
+  };
 
   return (
     <Box>
@@ -129,9 +120,7 @@ function Charts() {
                 sx={{
                   minWidth: 80,
                   borderRadius: '8px !important',
-                  '&:not(:last-child)': {
-                    borderRight: 'none',
-                  },
+                  '&:not(:last-child)': { borderRight: 'none' },
                 }}
               >
                 {range}
@@ -139,83 +128,89 @@ function Charts() {
             ))}
           </ButtonGroup>
         </Box>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
-            <ChartCard title="Light Intensity">
-              <Box sx={{ height: 300 }}>
-                <Line 
-                  data={lightData} 
-                  options={{
-                    ...chartOptions,
-                    plugins: {
-                      ...chartOptions.plugins,
-                      tooltip: {
-                        ...chartOptions.plugins.tooltip,
-                        callbacks: {
-                          label: (context) => `Light: ${context.raw} lux`,
-                        },
-                      },
-                    },
-                  }} 
-                />
-              </Box>
-            </ChartCard>
-          </Grid>
-          <Grid item xs={12} md={5}>
-            <ChartCard title="Temperature">
-              <Box sx={{ height: 300 }}>
-                <Bar 
-                  data={tempData} 
-                  options={{
-                    ...chartOptions,
-                    plugins: {
-                      ...chartOptions.plugins,
-                      tooltip: {
-                        ...chartOptions.plugins.tooltip,
-                        callbacks: {
-                          label: (context) => `Temperature: ${context.raw}°C`,
-                        },
-                      },
-                    },
-                  }} 
-                />
-              </Box>
-            </ChartCard>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ChartCard title="Humidity Distribution">
-              <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
-                <Box sx={{ width: '80%', maxWidth: 300 }}>
-                  <Pie 
-                    data={humidityData} 
+        {error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={7}>
+              <ChartCard title="Light Intensity">
+                <Box sx={{ height: 300 }}>
+                  <Line 
+                    key={JSON.stringify(lightData)}
+                    data={lightData} 
                     options={{
                       ...chartOptions,
                       plugins: {
                         ...chartOptions.plugins,
-                        legend: {
-                          display: true,
-                          position: 'bottom',
-                          labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                          },
-                        },
                         tooltip: {
                           ...chartOptions.plugins.tooltip,
                           callbacks: {
-                            label: (context) => `Humidity: ${context.raw}%`,
+                            label: (context) => `Light: ${context.raw} lux`,
                           },
                         },
                       },
                     }} 
                   />
                 </Box>
-              </Box>
-            </ChartCard>
+              </ChartCard>
+            </Grid>
+            <Grid item xs={12} md={5}>
+              <ChartCard title="Temperature">
+                <Box sx={{ height: 300 }}>
+                  <Bar 
+                    key={JSON.stringify(tempData)}
+                    data={tempData} 
+                    options={{
+                      ...chartOptions,
+                      plugins: {
+                        ...chartOptions.plugins,
+                        tooltip: {
+                          ...chartOptions.plugins.tooltip,
+                          callbacks: {
+                            label: (context) => `Temperature: ${context.raw}°C`,
+                          },
+                        },
+                      },
+                    }} 
+                  />
+                </Box>
+              </ChartCard>
+            </Grid>
+            <Grid item xs={12} md={5}>
+              <ChartCard title="Humidity">
+                <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
+                  <Box sx={{ width: '80%', maxWidth: 300 }}>
+                    <Pie 
+                      key={JSON.stringify(humidityData)}
+                      data={humidityData} 
+                      options={{
+                        ...chartOptions,
+                        plugins: {
+                          ...chartOptions.plugins,
+                          legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                              padding: 20,
+                              usePointStyle: true,
+                              pointStyle: 'circle',
+                            },
+                          },
+                          tooltip: {
+                            ...chartOptions.plugins.tooltip,
+                            callbacks: {
+                              label: (context) => `Humidity: ${context.raw}%`,
+                            },
+                          },
+                        },
+                      }} 
+                    />
+                  </Box>
+                </Box>
+              </ChartCard>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Paper>
     </Box>
   );
