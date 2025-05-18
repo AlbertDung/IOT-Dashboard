@@ -1,11 +1,13 @@
 import React from 'react';
 import { Box, Typography, Grid, Paper, Button, Stack } from '@mui/material';
 import DeviceCard from './DeviceCard';
-import devices from '../../mock/devices';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import useDeviceStatus from '../../hooks/useDeviceStatus';
 
 function Dashboard() {
+  const { devices, lastUpdated, error } = useDeviceStatus();
+
   return (
     <Box>
       <Paper 
@@ -65,10 +67,10 @@ function Dashboard() {
             }}>
               <Typography variant="h6" gutterBottom>System Status</Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Active Devices: {devices.filter(d => d.status).length}
+                Active Devices: {devices ? devices.filter(d => d.status).length : 0}
               </Typography>
               <Typography variant="body2">
-                Total Devices: {devices.length}
+                Total Devices: {devices ? devices.length : 0}
               </Typography>
             </Box>
           </Grid>
@@ -80,21 +82,25 @@ function Dashboard() {
           Connected Devices
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Last updated: {new Date().toLocaleString()}
+          Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleString() : 'N/A'}
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
-        {devices.map(device => (
-          <Grid item key={device.id} xs={12} sm={6} md={4} lg={3}>
-            <DeviceCard 
-              name={device.name} 
-              status={device.status} 
-              lastSeen={device.lastSeen} 
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {error ? (
+        <Typography color="error">{error}</Typography>
+      ) : (
+        <Grid container spacing={3}>
+          {devices && devices.map(device => (
+            <Grid item key={device.id} xs={12} sm={6} md={4} lg={3}>
+              <DeviceCard 
+                name={device.name} 
+                status={device.status} 
+                lastSeen={device.lastSeen} 
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 }
