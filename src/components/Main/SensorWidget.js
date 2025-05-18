@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Box, LinearProgress } from '@mui/materia
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
-function SensorWidget({ name, value, unit, color }) {
+function SensorWidget({ name, value, unit, color, max }) {
   const getStatus = (value, name) => {
     if (name === 'Temperature') {
       if (value > 30) return { status: 'High', icon: <TrendingUpIcon color="error" /> };
@@ -116,6 +116,11 @@ function SensorWidget({ name, value, unit, color }) {
         >
           Status: {status}
         </Typography>
+        {max !== undefined && (
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+            Max: {max} {unit}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
