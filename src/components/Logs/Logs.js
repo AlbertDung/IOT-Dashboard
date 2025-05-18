@@ -3,7 +3,7 @@ import { Box, Paper, Typography, TextField, InputAdornment, IconButton, Chip, St
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import LogsTable from './LogsTable';
-import logsData from '../../mock/logs';
+import useSensorData from '../../hooks/useSensorData';
 
 function Logs() {
   const [page, setPage] = useState(0);
@@ -14,18 +14,34 @@ function Logs() {
     sensor: '',
     timeRange: 'all',
   });
+  const { history, error } = useSensorData();
 
-  const filteredLogs = logsData.filter(log => {
-    const matchesSearch = 
-      log.deviceId.toLowerCase().includes(search.toLowerCase()) ||
-      log.ip.includes(search) ||
-      log.deviceName.toLowerCase().includes(search.toLowerCase()) ||
-      log.sensor.toLowerCase().includes(search.toLowerCase());
+  // Transform history: each sensor is a separate log line
+  let logs = [];
+  history.forEach(log => {
+    if (log.temperature !== undefined && log.temperature !== null) {
+      logs.push({ ...log, sensor: 'Temperature', value: log.temperature });
+    }
+    if (log.humidity !== undefined && log.humidity !== null) {
+      logs.push({ ...log, sensor: 'Humidity', value: log.humidity });
+    }
+    if (log.light !== undefined && log.light !== null) {
+      logs.push({ ...log, sensor: 'Light', value: log.light });
+    }
+  });
+  // Sort from oldest to newest
+  logs.sort((a, b) => new Date(b.time) - new Date(a.time));
 
-    const matchesFilters = 
+  // Filtering
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch =
+      (log.deviceId && log.deviceId.toLowerCase().includes(search.toLowerCase())) ||
+      (log.ip && log.ip.includes(search)) ||
+      (log.deviceName && log.deviceName.toLowerCase().includes(search.toLowerCase())) ||
+      (log.sensor && log.sensor.toLowerCase().includes(search.toLowerCase()));
+    const matchesFilters =
       (!filters.deviceId || log.deviceId === filters.deviceId) &&
       (!filters.sensor || log.sensor === filters.sensor);
-
     return matchesSearch && matchesFilters;
   });
 
@@ -34,8 +50,8 @@ function Logs() {
     page * rowsPerPage + rowsPerPage
   );
 
-  const uniqueDevices = [...new Set(logsData.map(log => log.deviceId))];
-  const uniqueSensors = [...new Set(logsData.map(log => log.sensor))];
+  const uniqueDevices = [...new Set(logs.map(log => log.deviceId))];
+  const uniqueSensors = [...new Set(logs.map(log => log.sensor))];
 
   return (
     <Box>
@@ -55,7 +71,6 @@ function Logs() {
             Total Logs: {filteredLogs.length}
           </Typography>
         </Box>
-
         <Box sx={{ mb: 3 }}>
           <TextField
             fullWidth
@@ -85,8 +100,7 @@ function Logs() {
             }}
           />
         </Box>
-
-        <Stack direction="row" spacing={1} sx={{ mb: 3, flexWrap: 'wrap', gap: 1 }}>
+        <Stack direction="row" spacing={1} mb={2}>
           {uniqueDevices.map(deviceId => (
             <Chip
               key={deviceId}
@@ -112,18 +126,21 @@ function Logs() {
             />
           ))}
         </Stack>
-
-        <LogsTable
-          logs={paginatedLogs}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => setPage(newPage)}
-          onRowsPerPageChange={e => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          totalCount={filteredLogs.length}
-        />
+        {error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          <LogsTable
+            logs={paginatedLogs}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(e, newPage) => setPage(newPage)}
+            onRowsPerPageChange={e => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            totalCount={filteredLogs.length}
+          />
+        )}
       </Paper>
     </Box>
   );
