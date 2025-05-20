@@ -1,12 +1,30 @@
-import React from 'react';
-import { Box, Typography, Grid, Paper, Button, Stack } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Grid, Paper, Button, Stack, Popover, List, ListItem, ListItemText } from '@mui/material';
 import DeviceCard from './DeviceCard';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import useDeviceStatus from '../../hooks/useDeviceStatus';
 
+const GROUP_MEMBERS = [
+  { code: '2124801030179', name: 'Nguyễn Duy Dũng' },
+  { code: '2124801030036', name: 'Lương Nguyễn Khôi' },
+  { code: '2124801030180', name: 'Nguyễn Tiến Dũng' },
+  { code: '2124801030076', name: 'Trương Bồ Quốc Thắng' },
+  { code: '2124801030233', name: 'Trần Lê Thảo' },
+  { code: '2124801030017', name: 'Nguyễn Minh Khôi' },
+];
+
 function Dashboard() {
   const { devices, lastUpdated, error } = useDeviceStatus();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleGroupClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleGroupClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
 
   return (
     <Box>
@@ -56,6 +74,36 @@ function Dashboard() {
               >
                 Refresh
               </Button>
+              <Button 
+                variant="contained"
+                sx={{ bgcolor: '#fff', color: 'primary.main', fontWeight: 600 }}
+                onClick={handleGroupClick}
+              >
+                Group Members
+              </Button>
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleGroupClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                PaperProps={{ sx: { p: 2, minWidth: 260 } }}
+              >
+                <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                  Group Members
+                </Typography>
+                <List dense>
+                  {GROUP_MEMBERS.map(member => (
+                    <ListItem key={member.code}>
+                      <ListItemText
+                        primary={member.name}
+                        secondary={member.code}
+                        primaryTypographyProps={{ fontWeight: 500 }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Popover>
             </Stack>
           </Grid>
           <Grid item xs={12} md={4}>
