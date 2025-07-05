@@ -19,7 +19,7 @@ function Main() {
   const [autoMode, setAutoMode] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [systemStatus, setSystemStatus] = useState('online');
+  // const [systemStatus, setSystemStatus] = useState('online');
   const [lastAction, setLastAction] = useState('');
   const { latest, max, error } = useSensorData();
 
