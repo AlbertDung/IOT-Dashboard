@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, CircularProgress, Alert } from '@mui/material';
 import AuthLayout from './AuthLayout';
-import axios from 'axios';
+import { authService } from '../../services/userService';
 
 export default function ForgotPasswordPage() {
   const [studentId, setStudentId] = useState('');
@@ -16,8 +16,8 @@ export default function ForgotPasswordPage() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5000/forgot-password', { studentId, email });
-      setSuccess('Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư.');
+      await authService.forgotPassword(studentId, email);
+      setSuccess('Thông tin tài khoản đã được xác nhận. Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.');
     } catch (err) {
       setError('Không tìm thấy tài khoản với thông tin đã nhập.');
     } finally {

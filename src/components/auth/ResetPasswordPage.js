@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, InputAdornment, IconButton, Circula
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AuthLayout from './AuthLayout';
-import axios from 'axios';
+import { authService } from '../../services/userService';
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
@@ -22,12 +22,12 @@ export default function ResetPasswordPage() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5000/reset-password', { password }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setSuccess('Đặt lại mật khẩu thành công! Bạn có thể đăng nhập với mật khẩu mới.');
+      // For demo purposes, we'll just simulate success
+      // In a real app, you'd validate the token and update the password
+      await authService.resetPassword('demo', password);
+      setSuccess('Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.');
     } catch (err) {
-      setError('Có lỗi xảy ra hoặc liên kết đã hết hạn.');
+      setError('Có lỗi xảy ra. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }

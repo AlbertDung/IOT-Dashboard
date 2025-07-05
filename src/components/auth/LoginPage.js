@@ -3,8 +3,8 @@ import { Box, Button, TextField, Typography, InputAdornment, IconButton, Circula
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AuthLayout from './AuthLayout';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/userService';
 
 export default function LoginPage({ onLogin }) {
   const [studentId, setStudentId] = useState('');
@@ -19,9 +19,9 @@ export default function LoginPage({ onLogin }) {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/login', { studentId, password });
-      localStorage.setItem('token', res.data.access_token);
-      if (onLogin) onLogin(res.data.name);
+      const res = await authService.login(studentId, password);
+      localStorage.setItem('token', res.access_token);
+      if (onLogin) onLogin(res.name);
       navigate('/');
     } catch (err) {
       setError('Mã số sinh viên hoặc mật khẩu không đúng.');
@@ -84,6 +84,22 @@ export default function LoginPage({ onLogin }) {
           Quên mật khẩu?
         </Button>
       </Box>
+      
+      {/* Development credentials info
+      <Box sx={{ mt: 3, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          <strong>Thông tin đăng nhập nhóm:</strong>
+        </Typography>
+        <Typography variant="caption" color="text.secondary" display="block">
+          Mã SV: 2124801030179 - Nguyễn Duy Dũng<br/>
+          Mã SV: 2124801030036 - Lương Nguyễn Khôi<br/>
+          Mã SV: 2124801030180 - Nguyễn Tiến Dũng<br/>
+          Mã SV: 2124801030076 - Trương Bồ Quốc Thắng<br/>
+          Mã SV: 2124801030233 - Trần Lê Thảo<br/>
+          Mã SV: 2124801030017 - Nguyễn Minh Khôi<br/>
+          <em>Mật khẩu là chính mã số sinh viên</em>
+        </Typography>
+      </Box> */}
     </AuthLayout>
   );
 } 

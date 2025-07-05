@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_BASE = 'http://192.168.1.12:5000/';
+import { mockSensorData, generateMockHistory } from '../services/userService';
 
 export default function useSensorData() {
   const [latest, setLatest] = useState(null);
@@ -9,28 +7,38 @@ export default function useSensorData() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchLatest = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/data`);
-        setLatest(res.data);
-      } catch (e) {
-        setError('Error fetching latest data');
-      }
+    const generateLatest = () => {
+      // Generate dynamic mock data with some variation
+      const baseData = mockSensorData;
+      const newData = {
+        temperature: baseData.temperature + (Math.random() - 0.5) * 4, // ±2°C variation
+        humidity: baseData.humidity + (Math.random() - 0.5) * 20, // ±10% variation
+        light: baseData.light + (Math.random() - 0.5) * 200, // ±100 variation
+        time: new Date().toISOString(),
+        deviceId: 'esp8266-demo',
+        deviceName: 'ESP8266 Demo'
+      };
+      setLatest(newData);
     };
-    const fetchHistory = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/history`);
-        setHistory(res.data); // [{temperature, humidity, light, time, ...}]
-      } catch (e) {
-        setError('Error fetching history');
-      }
+
+    const loadHistory = () => {
+      const mockHistory = generateMockHistory();
+      setHistory(mockHistory);
     };
-    fetchLatest();
-    fetchHistory();
+
+    // Initialize data
+    generateLatest();
+    loadHistory();
+    
+    // Update data periodically to simulate real sensor data
     const interval = setInterval(() => {
-      fetchLatest();
-      fetchHistory();
+      generateLatest();
+      // Optionally update history less frequently
+      if (Math.random() < 0.1) { // 10% chance to update history
+        loadHistory();
+      }
     }, 5000);
+    
     return () => clearInterval(interval);
   }, []);
 

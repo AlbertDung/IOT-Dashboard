@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Replace with your actual Flask server IP
-const SERVER_URL = 'http://192.168.1.12:5000/data';
+const SERVER_URL = 'http://192.168.1.6:5000/data';
 
 async function fetchData() {
   try {

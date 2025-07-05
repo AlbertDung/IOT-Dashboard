@@ -7,7 +7,7 @@ const char* ssid = "Hoi Lam Chi";          // Replace with your Wi-Fi SSID
 const char* password = "bat4gmasai";    // Replace with your Wi-Fi password
 
 // Flask server endpoint (use your PC's local IP)
-const char* serverName = "http://192.168.1.12:5000/data";
+const char* serverName = "http://192.168.1.6:5000/data";
 
 // DHT11 configuration
 #define DHTPIN 5       // D1 pin on NodeMCU = GPIO5

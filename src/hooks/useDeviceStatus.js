@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_BASE = 'http://192.168.1.12:5000/';
 
 export default function useDeviceStatus() {
   const [devices, setDevices] = useState(null);
@@ -9,17 +6,31 @@ export default function useDeviceStatus() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/data`);
-        setDevices(res.data.devices);
-        setLastUpdated(res.data.lastUpdated);
-      } catch (e) {
-        setError('Error fetching device status');
-      }
+    const generateDeviceStatus = () => {
+      // Mock device data
+      const mockDevices = [
+        {
+          id: 'esp8266-demo',
+          name: 'ESP8266 Demo',
+          status: true,
+          lastSeen: new Date().toLocaleString(),
+          ip: '192.168.1.100'
+        },
+        {
+          id: 'esp8266-backup',
+          name: 'ESP8266 Backup',
+          status: Math.random() > 0.3, // 70% chance to be online
+          lastSeen: new Date(Date.now() - Math.random() * 300000).toLocaleString(), // Random time in last 5 minutes
+          ip: '192.168.1.101'
+        }
+      ];
+      
+      setDevices(mockDevices);
+      setLastUpdated(new Date().toISOString());
     };
-    fetchDevices();
-    const interval = setInterval(fetchDevices, 5000);
+
+    generateDeviceStatus();
+    const interval = setInterval(generateDeviceStatus, 5000);
     return () => clearInterval(interval);
   }, []);
 

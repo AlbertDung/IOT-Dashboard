@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const SERVER_URL = 'http://192.168.1.12:5000/data'; // Use your Flask server IP
+const SERVER_URL = 'http://192.168.1.6:5000/data'; // Use your Flask server IP
 
 function SensorData() {
   const [data, setData] = useState({ temperature: '', humidity: '', light: '' });

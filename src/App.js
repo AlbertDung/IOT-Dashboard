@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, CssBaseline, Avatar, IconButton, useTheme, useMediaQuery, Badge, Popover, Button, Divider } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DevicesIcon from '@mui/icons-material/Devices';
