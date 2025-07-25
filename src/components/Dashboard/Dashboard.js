@@ -87,13 +87,13 @@ function Dashboard() {
     <Box>
       {/* Enhanced Welcome Header */}
       <Fade in timeout={800}>
-        <Paper 
-          sx={{ 
-            p: 4, 
-            mb: 4, 
+      <Paper 
+        sx={{ 
+          p: 4, 
+          mb: 4, 
             borderRadius: '24px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-            color: '#fff',
+          color: '#fff',
             position: 'relative',
             overflow: 'hidden',
             boxShadow: '0 8px 40px rgba(102, 126, 234, 0.3)',
@@ -111,10 +111,10 @@ function Dashboard() {
               '0%': { transform: 'translateX(-100%)' },
               '100%': { transform: 'translateX(100%)' }
             }
-          }}
-        >
+        }}
+      >
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={8}>
               <Box sx={{ position: 'relative', zIndex: 1 }}>
                 <Box display="flex" alignItems="center" gap={2} mb={2}>
                   <Badge 
@@ -136,11 +136,11 @@ function Dashboard() {
                   </Badge>
                   <Box>
                     <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '0.5px', mb: 1 }}>
-                      Welcome to IoT Dashboard
-                    </Typography>
+              Welcome to IoT Dashboard
+            </Typography>
                     <Typography variant="h6" sx={{ opacity: 0.95, fontWeight: 300 }}>
-                      Monitor and control your IoT devices in real-time
-                    </Typography>
+              Monitor and control your IoT devices in real-time
+            </Typography>
                   </Box>
                 </Box>
 
@@ -162,12 +162,12 @@ function Dashboard() {
                 )}
 
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <Button 
-                    variant="contained" 
+              <Button 
+                variant="contained" 
                     size="large"
-                    startIcon={<AddIcon />}
+                startIcon={<AddIcon />}
                     onClick={handleAddDevice}
-                    sx={{ 
+                sx={{ 
                       bgcolor: 'rgba(255,255,255,0.9)', 
                       color: '#667eea',
                       fontWeight: 600,
@@ -178,32 +178,32 @@ function Dashboard() {
                       boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                       transition: 'all 0.3s ease',
                       '&:hover': {
-                        bgcolor: 'white',
+                  bgcolor: 'white', 
                         transform: 'translateY(-2px)',
                         boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
-                      }
-                    }}
-                  >
+                  }
+                }}
+              >
                     Discover Devices
-                  </Button>
+              </Button>
 
-                  <Button 
-                    variant="outlined" 
+              <Button 
+                variant="outlined" 
                     size="large"
                     startIcon={isRefreshing ? <CloudSyncIcon className="rotating" /> : <RefreshIcon />}
                     onClick={handleRefresh}
                     disabled={isRefreshing}
-                    sx={{ 
+                sx={{ 
                       borderColor: 'rgba(255,255,255,0.7)', 
-                      color: 'white',
+                  color: 'white',
                       fontWeight: 500,
                       px: 3,
                       py: 1.5,
                       borderRadius: '12px',
                       textTransform: 'none',
                       transition: 'all 0.3s ease',
-                      '&:hover': {
-                        borderColor: 'white',
+                  '&:hover': {
+                    borderColor: 'white',
                         bgcolor: 'rgba(255,255,255,0.1)',
                         transform: 'translateY(-1px)',
                       },
@@ -213,17 +213,17 @@ function Dashboard() {
                       '@keyframes rotate': {
                         from: { transform: 'rotate(0deg)' },
                         to: { transform: 'rotate(360deg)' },
-                      }
-                    }}
-                  >
+                  }
+                }}
+              >
                     {isRefreshing ? 'Refreshing...' : 'Refresh All'}
-                  </Button>
+              </Button>
 
-                  <Button 
-                    variant="contained"
+              <Button 
+                variant="contained"
                     size="large"
                     startIcon={<GroupIcon />}
-                    onClick={handleGroupClick}
+                onClick={handleGroupClick}
                     sx={{ 
                       bgcolor: 'rgba(255,255,255,0.15)', 
                       color: 'white', 
@@ -242,7 +242,7 @@ function Dashboard() {
                     }}
                   >
                     Team Members
-                  </Button>
+              </Button>
                 </Stack>
               </Box>
             </Grid>
@@ -315,12 +315,12 @@ function Dashboard() {
           </Grid>
 
           {/* Enhanced Group Members Popover */}
-          <Popover
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleGroupClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleGroupClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             PaperProps={{ 
               sx: { 
                 p: 3, 
@@ -330,15 +330,15 @@ function Dashboard() {
                 boxShadow: '0 8px 40px rgba(0,0,0,0.15)'
               } 
             }}
-          >
+              >
             <Box display="flex" alignItems="center" gap={1} mb={2}>
               <GroupIcon color="primary" />
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#2d3748' }}>
                 Development Team
-              </Typography>
+                </Typography>
             </Box>
             
-            <List dense>
+                <List dense>
               {GROUP_MEMBERS.map((member, index) => (
                 <Fade in timeout={300 + index * 100} key={member.code}>
                   <ListItem 
@@ -355,7 +355,7 @@ function Dashboard() {
                     <Avatar sx={{ mr: 2, bgcolor: '#667eea', fontSize: '1.2rem' }}>
                       {member.avatar}
                     </Avatar>
-                    <ListItemText
+                      <ListItemText
                       primary={
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
                           {member.name}
@@ -379,12 +379,12 @@ function Dashboard() {
                           />
                         </Box>
                       }
-                    />
-                  </ListItem>
+                      />
+                    </ListItem>
                 </Fade>
-              ))}
-            </List>
-          </Popover>
+                  ))}
+                </List>
+              </Popover>
         </Paper>
       </Fade>
 
@@ -419,7 +419,7 @@ function Dashboard() {
                 <DevicesIcon sx={{ color: '#667eea', fontSize: 28 }} />
                 <Typography variant="h5" sx={{ fontWeight: 700, color: '#2d3748' }}>
                   Connected Devices
-                </Typography>
+              </Typography>
                 {syncPulse && (
                   <Chip 
                     label="Live" 
@@ -431,38 +431,38 @@ function Dashboard() {
                     }}
                   />
                 )}
-              </Box>
+            </Box>
               
               <Box textAlign="right">
                 <Typography variant="caption" color="text.secondary" display="block">
                   Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : 'N/A'}
-                </Typography>
+        </Typography>
                 <Box display="flex" alignItems="center" gap={1}>
                   <TrendingUpIcon sx={{ fontSize: 16, color: '#4caf50' }} />
                   <Typography variant="caption" sx={{ color: '#4caf50', fontWeight: 600 }}>
                     {Math.round((activeDevices / totalDevices) * 100)}% Online
-                  </Typography>
+        </Typography>
                 </Box>
               </Box>
-            </Box>
+      </Box>
 
-            {error ? (
+      {error ? (
               <Alert severity="error" sx={{ borderRadius: 2 }}>
                 {error}
               </Alert>
             ) : devices && devices.length > 0 ? (
-              <Grid container spacing={3}>
+        <Grid container spacing={3}>
                 {devices.map((device, index) => (
-                  <Grid item key={device.id} xs={12} sm={6} md={4} lg={3}>
+            <Grid item key={device.id} xs={12} sm={6} md={4} lg={3}>
                     <Zoom in timeout={400 + index * 100}>
                       <div>
-                                                <DeviceCard 
+              <DeviceCard 
                            device={device}
                            onDeviceAction={(action, deviceName) => {
                              showNotification(`${action} executed on ${deviceName}`, 'success');
                              setRecentActivity(`${deviceName} ${action.toLowerCase()}`);
                            }}
-                         />
+              />
                       </div>
                     </Zoom>
                   </Grid>
@@ -473,10 +473,10 @@ function Dashboard() {
                 {[1, 2, 3, 4].map((i) => (
                   <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
                     <Skeleton variant="rounded" height={200} />
-                  </Grid>
-                ))}
-              </Grid>
-            )}
+            </Grid>
+          ))}
+        </Grid>
+      )}
           </Paper>
         </Box>
       </Fade>
