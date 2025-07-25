@@ -40,7 +40,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import LogsTable from './LogsTable';
 import useSensorData from '../../hooks/useSensorData';
 import { exportLogsData, exportSummaryStats } from '../../utils/exportUtils';
-import { exportSummaryToPDF } from '../../utils/pdfExportFix';
+import { exportSummaryToPDFVercel } from '../../utils/pdfExportVercel';
 
 function Logs() {
   const [page, setPage] = useState(0);
@@ -173,8 +173,8 @@ function Logs() {
       let result;
       
       if (format === 'summary') {
-        // Export summary statistics using fixed PDF function
-        result = exportSummaryToPDF(filteredLogs, 'logs');
+        // Export summary statistics using Vercel-compatible PDF function
+        result = await exportSummaryToPDFVercel(filteredLogs, 'logs');
       } else {
         // Export filtered logs data in other formats (including PDF for raw data)
         result = exportLogsData(filteredLogs, format);

@@ -4,6 +4,11 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 
+// Ensure autoTable plugin is loaded
+if (typeof jsPDF.API.autoTable === 'undefined') {
+  require('jspdf-autotable');
+}
+
 // Utility function to format date for filenames
 const formatDateForFilename = () => {
   const now = new Date();

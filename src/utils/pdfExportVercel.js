@@ -1,6 +1,28 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+
+// Dynamic import for better compatibility with Vercel
+let autoTable;
+
+const loadAutoTable = async () => {
+  if (!autoTable) {
+    try {
+      // Try dynamic import first
+      const autoTableModule = await import('jspdf-autotable');
+      autoTable = autoTableModule.default || autoTableModule;
+    } catch (error) {
+      console.log('Dynamic import failed, trying require:', error);
+      try {
+        // Fallback to require
+        require('jspdf-autotable');
+        autoTable = true;
+      } catch (requireError) {
+        console.error('Failed to load jspdf-autotable:', requireError);
+        throw new Error('Could not load PDF table plugin');
+      }
+    }
+  }
+};
 
 // Utility function to format date for filenames
 const formatDateForFilename = () => {
@@ -8,19 +30,17 @@ const formatDateForFilename = () => {
   return now.toISOString().slice(0, 19).replace(/:/g, '-');
 };
 
-// Ensure autoTable plugin is loaded
-if (typeof jsPDF.API.autoTable === 'undefined') {
-  require('jspdf-autotable');
-}
-
-// Fixed PDF Export Function
-export const exportToPDFFixed = (data, filename, title = 'Data Export', headers = null) => {
+// Vercel-compatible PDF Export Function
+export const exportToPDFVercel = async (data, filename, title = 'Data Export', headers = null) => {
   try {
-    console.log('Starting PDF export with data:', data.length, 'records');
+    console.log('Starting Vercel-compatible PDF export with data:', data.length, 'records');
+    
+    // Ensure autoTable is loaded
+    await loadAutoTable();
     
     const doc = new jsPDF();
     
-    // Verify autoTable is available
+    // Check if autoTable is available
     if (typeof doc.autoTable !== 'function') {
       console.error('autoTable is not available on jsPDF instance');
       throw new Error('PDF table plugin not loaded correctly');
@@ -100,8 +120,8 @@ export const exportToPDFFixed = (data, filename, title = 'Data Export', headers 
   }
 };
 
-// Logs-specific PDF export with error handling
-export const exportLogsToPDF = (logs) => {
+// Logs-specific PDF export for Vercel
+export const exportLogsToPDFVercel = async (logs) => {
   try {
     const processedLogs = logs.map(log => ({
       'Device ID': log.deviceId || '',
@@ -121,15 +141,15 @@ export const exportLogsToPDF = (logs) => {
       'Value', 'Unit', 'Severity', 'Timestamp', 'Date', 'Time'
     ];
 
-    return exportToPDFFixed(processedLogs, 'iot_logs', 'IoT Sensor Logs Report', headers);
+    return await exportToPDFVercel(processedLogs, 'iot_logs', 'IoT Sensor Logs Report', headers);
   } catch (error) {
     console.error('Logs PDF Export Error:', error);
     return { success: false, message: 'Failed to export logs PDF: ' + error.message };
   }
 };
 
-// Charts-specific PDF export with error handling
-export const exportChartsToPDF = (history, timeRange = 'all') => {
+// Charts-specific PDF export for Vercel
+export const exportChartsToPDFVercel = async (history, timeRange = 'all') => {
   try {
     const processedData = history.map(entry => ({
       'Timestamp': entry.time ? new Date(entry.time).toLocaleString() : '',
@@ -152,15 +172,15 @@ export const exportChartsToPDF = (history, timeRange = 'all') => {
     const filename = `iot_analytics_${timeRange}`;
     const title = `IoT Analytics Report - ${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)} View`;
 
-    return exportToPDFFixed(processedData, filename, title, headers);
+    return await exportToPDFVercel(processedData, filename, title, headers);
   } catch (error) {
     console.error('Charts PDF Export Error:', error);
     return { success: false, message: 'Failed to export charts PDF: ' + error.message };
   }
 };
 
-// Summary statistics PDF export
-export const exportSummaryToPDF = (data, type = 'logs') => {
+// Summary statistics PDF export for Vercel
+export const exportSummaryToPDFVercel = async (data, type = 'logs') => {
   try {
     let stats = {};
     
@@ -216,7 +236,7 @@ export const exportSummaryToPDF = (data, type = 'logs') => {
     const filename = `iot_${type}_summary`;
     const title = `IoT ${type.charAt(0).toUpperCase() + type.slice(1)} Summary Report`;
     
-    return exportToPDFFixed(statsArray, filename, title, ['Metric', 'Value']);
+    return await exportToPDFVercel(statsArray, filename, title, ['Metric', 'Value']);
   } catch (error) {
     console.error('Summary PDF Export Error:', error);
     return { success: false, message: 'Failed to export summary PDF: ' + error.message };
