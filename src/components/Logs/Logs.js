@@ -172,11 +172,11 @@ function Logs() {
     try {
       let result;
       
-      if (format === 'pdf') {
-        // Export logs as PDF using fixed function
-        result = exportLogsToPDF(filteredLogs);
+      if (format === 'summary') {
+        // Export summary statistics using fixed PDF function
+        result = exportSummaryToPDF(filteredLogs, 'logs');
       } else {
-        // Export filtered logs data in other formats
+        // Export filtered logs data in other formats (including PDF for raw data)
         result = exportLogsData(filteredLogs, format);
       }
       
@@ -625,8 +625,9 @@ function Logs() {
         <MenuItem onClick={() => handleExport('excel')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
           📈 Export as Excel
         </MenuItem>
-        <MenuItem onClick={() => handleExport('pdf')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
-          📃 Export as PDF
+        <Divider sx={{ my: 1 }} />
+        <MenuItem onClick={() => handleExport('summary')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
+          📋 Export Summary Report
         </MenuItem>
       </Menu>
 
