@@ -7,6 +7,7 @@ import {
 import ChartCard from './ChartCard';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import useSensorData from '../../hooks/useSensorData';
+import { exportChartsData, exportSummaryStats, exportChartAsPNG } from '../../utils/exportUtils';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -144,12 +145,33 @@ function Charts() {
     setExportAnchorEl(null);
   };
 
-  const handleExport = (format) => {
-    showNotification(`Exporting data as ${format.toUpperCase()}...`, 'info');
+  const handleExport = async (format) => {
     setExportAnchorEl(null);
-    setTimeout(() => {
-      showNotification(`Data exported successfully as ${format.toUpperCase()}!`, 'success');
-    }, 1500);
+    showNotification(`Preparing ${format.toUpperCase()} export...`, 'info');
+    
+    try {
+      let result;
+      
+      if (format === 'image') {
+        // Export chart as image
+        result = await exportChartAsPNG('charts-container', 'iot-analytics-charts');
+      } else if (format === 'summary') {
+        // Export summary statistics
+        result = exportSummaryStats(history, 'pdf', 'analytics');
+      } else {
+        // Export raw data
+        result = exportChartsData(history, format, timeRange);
+      }
+      
+      if (result.success) {
+        showNotification(result.message, 'success');
+      } else {
+        showNotification(result.message, 'error');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      showNotification(`Failed to export ${format.toUpperCase()}: ${error.message}`, 'error');
+    }
   };
 
   const getTrendIcon = (trend) => {
@@ -503,22 +525,32 @@ function Charts() {
               sx: {
                 borderRadius: '12px',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                minWidth: 200,
+                minWidth: 220,
               }
             }}
           >
+            <Typography variant="caption" sx={{ px: 2, py: 1, color: 'text.secondary', fontWeight: 600 }}>
+              📊 Export Data ({history.length} records)
+            </Typography>
+            <Divider sx={{ mb: 1 }} />
             <MenuItem onClick={() => handleExport('csv')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
               📊 Export as CSV
             </MenuItem>
             <MenuItem onClick={() => handleExport('json')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
               📄 Export as JSON
             </MenuItem>
+            <MenuItem onClick={() => handleExport('excel')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+              📈 Export as Excel
+            </MenuItem>
             <MenuItem onClick={() => handleExport('pdf')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
               📕 Export as PDF
             </MenuItem>
             <Divider sx={{ my: 1 }} />
+            <MenuItem onClick={() => handleExport('summary')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+              📋 Export Summary Report
+            </MenuItem>
             <MenuItem onClick={() => handleExport('image')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
-              🖼️ Export as Image
+              🖼️ Export Charts as Image
             </MenuItem>
           </Menu>
         </Paper>
@@ -595,6 +627,7 @@ function Charts() {
         </Alert>
       ) : (
         <Fade in timeout={1400}>
+          <Box id="charts-container">
           <Grid container spacing={4}>
             <Grid item xs={12} lg={8}>
               <ChartCard 
@@ -691,6 +724,7 @@ function Charts() {
               </ChartCard>
             </Grid>
           </Grid>
+          </Box>
         </Fade>
       )}
 
