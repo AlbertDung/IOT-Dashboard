@@ -126,7 +126,7 @@ export const exportToPDF = (data, filename, title = 'Data Export', headers = nul
       })
     );
     
-    // Add table
+    // Add table using autoTable plugin
     doc.autoTable({
       head: [tableHeaders],
       body: tableData,
