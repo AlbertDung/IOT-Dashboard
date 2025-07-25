@@ -38,31 +38,55 @@ const users = {
     "name": "Nguyễn Duy Dũng",
     "email": "2124801030179@student.tdmu.edu.vn",
     "password": simpleHash("2124801030179"),
+    "role": "Lead Developer",
+    "bio": "IoT Lead Developer with expertise in full-stack development and system architecture.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 901 234 567"
   },
   "2124801030036": {
     "name": "Lương Nguyễn Khôi",
     "email": "2124801030036@student.tdmu.edu.vn",
     "password": simpleHash("2124801030036"),
+    "role": "Frontend Dev",
+    "bio": "Frontend developer passionate about creating beautiful and intuitive user interfaces.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 902 345 678"
   },
   "2124801030180": {
     "name": "Nguyễn Tiến Dũng",
     "email": "2124801030180@student.tdmu.edu.vn",
     "password": simpleHash("2124801030180"),
+    "role": "Backend Dev",
+    "bio": "Backend developer focused on scalable APIs and database optimization.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 903 456 789"
   },
   "2124801030076": {
     "name": "Trương Bồ Quốc Thắng",
     "email": "2124801030076@student.tdmu.edu.vn",
     "password": simpleHash("2124801030076"),
+    "role": "DevOps",
+    "bio": "DevOps engineer specializing in cloud infrastructure and CI/CD pipelines.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 904 567 890"
   },
   "2124801030233": {
     "name": "Trần Lê Thảo",
     "email": "2124801030233@student.tdmu.edu.vn",
     "password": simpleHash("2124801030233"),
+    "role": "UI/UX Designer",
+    "bio": "UI/UX designer with a keen eye for user experience and visual design.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 905 678 901"
   },
   "2124801030017": {
     "name": "Nguyễn Minh Khôi",
     "email": "2124801030017@student.tdmu.edu.vn",
     "password": simpleHash("2124801030017"),
+    "role": "QA Engineer",
+    "bio": "Quality assurance engineer ensuring software reliability and performance.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "phone": "+84 906 789 012"
   },
 };
 

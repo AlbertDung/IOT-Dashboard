@@ -5,6 +5,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import DevicesIcon from '@mui/icons-material/Devices';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import PersonIcon from '@mui/icons-material/Person';
+import ChatIcon from '@mui/icons-material/Chat';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import './App.css';
@@ -14,6 +16,8 @@ import Main from './components/Main/Main';
 import Charts from './components/Charts/Charts';
 import Logs from './components/Logs/Logs';
 import SensorData from './components/SensorData';
+import Profile from './components/Profile/Profile';
+import TeamChat from './components/TeamChat/TeamChat';
 
 // Lazy load auth pages for smoothness
 const LoginPage = React.lazy(() => import('./components/auth/LoginPage'));
@@ -105,6 +109,8 @@ function App() {
         <NavItem to="/main" icon={<DevicesIcon />} text="Devices" />
         <NavItem to="/charts" icon={<BarChartIcon />} text="Analytics" />
         <NavItem to="/logs" icon={<ListAltIcon />} text="Logs" />
+        <NavItem to="/profile" icon={<PersonIcon />} text="Profile" />
+        <NavItem to="/team-chat" icon={<ChatIcon />} text="Team Chat" />
       </List>
     </>
   );
@@ -232,6 +238,8 @@ function App() {
                       <Route path="/main" element={<Main />} />
                       <Route path="/charts" element={<Charts />} />
                       <Route path="/logs" element={<Logs />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/team-chat" element={<TeamChat />} />
                     </Routes>
                     <SensorData />
                   </Box>
