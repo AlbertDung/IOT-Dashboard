@@ -8,6 +8,7 @@ import ChartCard from './ChartCard';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import useSensorData from '../../hooks/useSensorData';
 import { exportChartsData, exportSummaryStats, exportChartAsPNG } from '../../utils/exportUtils';
+import { exportChartsToPDF, exportSummaryToPDF } from '../../utils/pdfExportFix';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -156,10 +157,13 @@ function Charts() {
         // Export chart as image
         result = await exportChartAsPNG('charts-container', 'iot-analytics-charts');
       } else if (format === 'summary') {
-        // Export summary statistics
-        result = exportSummaryStats(history, 'pdf', 'analytics');
+        // Export summary statistics using fixed PDF function
+        result = exportSummaryToPDF(history, 'analytics');
+      } else if (format === 'pdf') {
+        // Export analytics data as PDF using fixed function
+        result = exportChartsToPDF(history, timeRange);
       } else {
-        // Export raw data
+        // Export raw data in other formats
         result = exportChartsData(history, format, timeRange);
       }
       
