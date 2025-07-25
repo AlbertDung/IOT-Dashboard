@@ -40,6 +40,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import LogsTable from './LogsTable';
 import useSensorData from '../../hooks/useSensorData';
 import { exportLogsData, exportSummaryStats } from '../../utils/exportUtils';
+import { exportSummaryToPDF } from '../../utils/pdfExportFix';
 
 function Logs() {
   const [page, setPage] = useState(0);
@@ -171,11 +172,11 @@ function Logs() {
     try {
       let result;
       
-      if (format === 'summary') {
-        // Export summary statistics
-        result = exportSummaryStats(filteredLogs, 'pdf', 'logs');
+      if (format === 'pdf') {
+        // Export logs as PDF using fixed function
+        result = exportLogsToPDF(filteredLogs);
       } else {
-        // Export filtered logs data
+        // Export filtered logs data in other formats
         result = exportLogsData(filteredLogs, format);
       }
       
@@ -624,12 +625,8 @@ function Logs() {
         <MenuItem onClick={() => handleExport('excel')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
           📈 Export as Excel
         </MenuItem>
-        <MenuItem onClick={() => handleExport('pdf')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+        <MenuItem onClick={() => handleExport('pdf')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
           📃 Export as PDF
-        </MenuItem>
-        <Divider sx={{ my: 1 }} />
-        <MenuItem onClick={() => handleExport('summary')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
-          📋 Export Summary Report
         </MenuItem>
       </Menu>
 
