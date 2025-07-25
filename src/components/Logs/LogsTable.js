@@ -26,6 +26,7 @@ import {
   Alert
 } from '@mui/material';
 import { format } from 'date-fns';
+import { exportLogsData } from '../../utils/exportUtils';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -110,8 +111,17 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
     setSelectedLog(null);
   };
 
-  const handleAction = (action) => {
-    console.log(`${action} performed on log:`, selectedLog);
+  const handleAction = async (action) => {
+    if (action === 'export-csv') {
+      try {
+        const result = exportLogsData([selectedLog], 'csv');
+        console.log('Export result:', result);
+      } catch (error) {
+        console.error('Export error:', error);
+      }
+    } else {
+      console.log(`${action} performed on log:`, selectedLog);
+    }
     handleActionClose();
   };
 
@@ -217,21 +227,21 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
           <TableBody>
             {logs.map((log, idx) => (
               <Fade in={true} timeout={300} style={{ transitionDelay: `${idx * 50}ms` }} key={idx}>
-                <TableRow 
+              <TableRow 
                   className="table-row"
                   onMouseEnter={() => setHoveredRow(idx)}
                   onMouseLeave={() => setHoveredRow(null)}
-                  sx={{ 
+                sx={{ 
                     borderLeft: `4px solid ${
                       log.severity === 'critical' ? '#f44336' : 
                       log.severity === 'warning' ? '#ff9800' : '#4caf50'
                     }`,
                     '&:last-child td, &:last-child th': { border: 0 },
                     bgcolor: hoveredRow === idx ? 'action.hover' : 'transparent'
-                  }}
-                >
+                }}
+              >
                   {/* Device Info */}
-                  <TableCell>
+                <TableCell>
                     <Box display="flex" alignItems="center" gap={2}>
                       <Avatar 
                         sx={{ 
@@ -249,24 +259,24 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
                           {getDeviceTypeLabel(log.deviceId)}
-                        </Typography>
+                  </Typography>
                         <Typography variant="caption" sx={{ display: 'block', color: 'primary.main', fontWeight: 500 }}>
                           {log.deviceName}
-                        </Typography>
+                  </Typography>
                       </Box>
                     </Box>
-                  </TableCell>
+                </TableCell>
 
                   {/* Network Info */}
-                  <TableCell>
+                <TableCell>
                     <Box>
-                      <Chip 
+                  <Chip 
                         label={log.ip}
-                        size="small"
+                    size="small"
                         icon={<DevicesIcon />}
-                        sx={{ 
-                          bgcolor: 'primary.light',
-                          color: 'primary.main',
+                    sx={{ 
+                      bgcolor: 'primary.light',
+                      color: 'primary.main',
                           fontFamily: 'monospace',
                           fontWeight: 600,
                           mb: 0.5
@@ -304,14 +314,14 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                         </Box>
                       </Box>
                     </Box>
-                  </TableCell>
+                </TableCell>
 
                   {/* Status & Trends */}
-                  <TableCell>
+                <TableCell>
                     <Stack spacing={1}>
-                      <Chip 
+                  <Chip 
                         label={`${getSeverityIcon(log.severity)} ${log.severity.toUpperCase()}`}
-                        size="small"
+                    size="small"
                         color={getSeverityColor(log.severity)}
                         className={log.severity === 'critical' ? 'glow-critical' : ''}
                         sx={{ fontWeight: 600 }}
@@ -327,10 +337,10 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                          log.severity === 'warning' ? '⚡ Monitor closely' : '🎯 Within normal range'}
                       </Typography>
                     </Stack>
-                  </TableCell>
+                </TableCell>
 
                   {/* Timeline */}
-                  <TableCell>
+                <TableCell>
                     <Box>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getTimeAgo(log.time)}
@@ -340,7 +350,7 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                       </Typography>
                       <Typography variant="caption" sx={{ display: 'block', color: 'info.main' }}>
                         📅 {format(new Date(log.time), 'yyyy')}
-                      </Typography>
+                  </Typography>
                     </Box>
                   </TableCell>
 
@@ -392,8 +402,8 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                         </Badge>
                       )}
                     </Box>
-                  </TableCell>
-                </TableRow>
+                </TableCell>
+              </TableRow>
               </Fade>
             ))}
             {logs.length === 0 && (
@@ -402,8 +412,8 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
                   <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
                     <InfoIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.5 }} />
                     <Typography variant="h6" color="text.secondary">
-                      No logs found
-                    </Typography>
+                    No logs found
+                  </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Try adjusting your filters or search criteria
                     </Typography>
@@ -417,24 +427,24 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
 
       {/* Enhanced Pagination */}
       <Card sx={{ mt: 2, borderRadius: '12px', overflow: 'hidden' }}>
-        <TablePagination
-          component="div"
-          count={totalCount}
-          page={page}
-          onPageChange={onPageChange}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={onRowsPerPageChange}
+      <TablePagination
+        component="div"
+        count={totalCount}
+        page={page}
+        onPageChange={onPageChange}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={onRowsPerPageChange}
           rowsPerPageOptions={[10, 25, 50, 100]}
-          sx={{
+        sx={{
             bgcolor: 'background.paper',
-            '.MuiTablePagination-select': {
-              borderRadius: '8px',
+          '.MuiTablePagination-select': {
+            borderRadius: '8px',
               bgcolor: 'primary.light',
               color: 'primary.main',
               fontWeight: 600
-            },
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
-              my: 0,
+          },
+          '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+            my: 0,
               fontWeight: 600,
               color: 'text.primary'
             },
@@ -472,6 +482,10 @@ function LogsTable({ logs, page, rowsPerPage, onPageChange, onRowsPerPageChange,
         <MenuItem onClick={() => handleAction('flag')} sx={{ gap: 1 }}>
           <FlagIcon fontSize="small" color="warning" />
           Flag for Review
+        </MenuItem>
+        <MenuItem onClick={() => handleAction('export-csv')} sx={{ gap: 1 }}>
+          <ShareIcon fontSize="small" color="success" />
+          Export as CSV
         </MenuItem>
         <MenuItem onClick={() => handleAction('share')} sx={{ gap: 1 }}>
           <ShareIcon fontSize="small" color="info" />

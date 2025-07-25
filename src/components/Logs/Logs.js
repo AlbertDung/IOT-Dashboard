@@ -39,6 +39,7 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import SecurityIcon from '@mui/icons-material/Security';
 import LogsTable from './LogsTable';
 import useSensorData from '../../hooks/useSensorData';
+import { exportLogsData, exportSummaryStats } from '../../utils/exportUtils';
 
 function Logs() {
   const [page, setPage] = useState(0);
@@ -160,12 +161,42 @@ function Logs() {
     }, 1500);
   };
 
-  const handleExport = (format) => {
+  const handleExport = async (format) => {
     setExportMenuAnchor(null);
     setNotification({
       type: 'info',
-      message: `📊 Exporting ${filteredLogs.length} logs as ${format.toUpperCase()}...`
+      message: `📊 Preparing ${format.toUpperCase()} export for ${filteredLogs.length} logs...`
     });
+    
+    try {
+      let result;
+      
+      if (format === 'summary') {
+        // Export summary statistics
+        result = exportSummaryStats(filteredLogs, 'pdf', 'logs');
+      } else {
+        // Export filtered logs data
+        result = exportLogsData(filteredLogs, format);
+      }
+      
+      if (result.success) {
+        setNotification({
+          type: 'success',
+          message: `✅ ${result.message}`
+        });
+      } else {
+        setNotification({
+          type: 'error',
+          message: `❌ ${result.message}`
+        });
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      setNotification({
+        type: 'error',
+        message: `❌ Failed to export ${format.toUpperCase()}: ${error.message}`
+      });
+    }
   };
 
   const getHealthColor = (health) => {
@@ -246,7 +277,7 @@ function Logs() {
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Real-time monitoring and intelligent insights
-                </Typography>
+          </Typography>
               </Box>
             </Box>
           </Grid>
@@ -370,7 +401,7 @@ function Logs() {
               }}
             >
               <RefreshIcon sx={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
-            </IconButton>
+                  </IconButton>
           </Tooltip>
 
           <Tooltip title="Export Logs">
@@ -379,7 +410,7 @@ function Logs() {
                 variant="contained"
                 startIcon={<GetAppIcon />}
                 onClick={(e) => setExportMenuAnchor(e.currentTarget)}
-                sx={{ 
+            sx={{
                   borderRadius: '12px',
                   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
                   '&:hover': {
@@ -451,43 +482,43 @@ function Logs() {
             {/* Device Filters */}
             {uniqueDevices.map((deviceId, index) => (
               <Zoom in={true} key={deviceId} style={{ transitionDelay: `${(index + 4) * 100}ms` }}>
-                <Chip
+            <Chip
                   label={`📡 ${deviceId}`}
-                  onClick={() => setFilters(prev => ({
-                    ...prev,
-                    deviceId: prev.deviceId === deviceId ? '' : deviceId
-                  }))}
+              onClick={() => setFilters(prev => ({
+                ...prev,
+                deviceId: prev.deviceId === deviceId ? '' : deviceId
+              }))}
                   color={filters.deviceId === deviceId ? 'secondary' : 'default'}
-                  variant={filters.deviceId === deviceId ? 'filled' : 'outlined'}
+              variant={filters.deviceId === deviceId ? 'filled' : 'outlined'}
                   sx={{ 
                     borderRadius: '20px',
                     '&:hover': { transform: 'translateY(-2px)', transition: 'all 0.2s' }
                   }}
-                />
+            />
               </Zoom>
-            ))}
+          ))}
             
             <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
             
             {/* Sensor Filters */}
             {uniqueSensors.map((sensor, index) => (
               <Zoom in={true} key={sensor} style={{ transitionDelay: `${(index + 7) * 100}ms` }}>
-                <Chip
+            <Chip
                   label={`${sensor === 'Temperature' ? '🌡️' : sensor === 'Humidity' ? '💧' : '💡'} ${sensor}`}
-                  onClick={() => setFilters(prev => ({
-                    ...prev,
-                    sensor: prev.sensor === sensor ? '' : sensor
-                  }))}
+              onClick={() => setFilters(prev => ({
+                ...prev,
+                sensor: prev.sensor === sensor ? '' : sensor
+              }))}
                   color={filters.sensor === sensor ? 'info' : 'default'}
-                  variant={filters.sensor === sensor ? 'filled' : 'outlined'}
+              variant={filters.sensor === sensor ? 'filled' : 'outlined'}
                   sx={{ 
                     borderRadius: '20px',
                     '&:hover': { transform: 'translateY(-2px)', transition: 'all 0.2s' }
                   }}
-                />
+            />
               </Zoom>
-            ))}
-          </Stack>
+          ))}
+        </Stack>
         </Box>
       </Paper>
 
@@ -548,23 +579,23 @@ function Logs() {
       </Grid>
 
       {/* Enhanced Logs Table */}
-      {error ? (
+        {error ? (
         <Alert severity="error" sx={{ borderRadius: '12px' }}>
           <Typography>❌ {error}</Typography>
         </Alert>
-      ) : (
-        <LogsTable
-          logs={paginatedLogs}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => setPage(newPage)}
-          onRowsPerPageChange={e => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          totalCount={filteredLogs.length}
-        />
-      )}
+        ) : (
+          <LogsTable
+            logs={paginatedLogs}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(e, newPage) => setPage(newPage)}
+            onRowsPerPageChange={e => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            totalCount={filteredLogs.length}
+          />
+        )}
 
       {/* Export Menu */}
       <Menu
@@ -572,13 +603,34 @@ function Logs() {
         open={Boolean(exportMenuAnchor)}
         onClose={() => setExportMenuAnchor(null)}
         PaperProps={{
-          sx: { borderRadius: '12px', mt: 1 }
+          sx: { 
+            borderRadius: '12px', 
+            mt: 1,
+            minWidth: 220,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)'
+          }
         }}
       >
-        <MenuItem onClick={() => handleExport('csv')}>📊 Export as CSV</MenuItem>
-        <MenuItem onClick={() => handleExport('json')}>📄 Export as JSON</MenuItem>
-        <MenuItem onClick={() => handleExport('pdf')}>📃 Export as PDF</MenuItem>
-        <MenuItem onClick={() => handleExport('excel')}>📈 Export as Excel</MenuItem>
+        <Typography variant="caption" sx={{ px: 2, py: 1, color: 'text.secondary', fontWeight: 600 }}>
+          📊 Export Data ({filteredLogs.length} filtered logs)
+        </Typography>
+        <Divider sx={{ mb: 1 }} />
+        <MenuItem onClick={() => handleExport('csv')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+          📊 Export as CSV
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('json')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+          📄 Export as JSON
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('excel')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+          📈 Export as Excel
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('pdf')} sx={{ py: 1.5, borderRadius: '8px', mx: 1, mb: 0.5 }}>
+          📃 Export as PDF
+        </MenuItem>
+        <Divider sx={{ my: 1 }} />
+        <MenuItem onClick={() => handleExport('summary')} sx={{ py: 1.5, borderRadius: '8px', mx: 1 }}>
+          📋 Export Summary Report
+        </MenuItem>
       </Menu>
 
       {/* Notifications */}
@@ -598,7 +650,7 @@ function Logs() {
           </Alert>
         )}
              </Snackbar>
-     </Box>
+    </Box>
   );
 }
 
